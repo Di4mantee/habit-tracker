@@ -22,15 +22,15 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#e8ecf8;display:flex;fle
 .day-name{text-align:center;font-size:12px;font-weight:700;color:#7b8ec8;text-transform:uppercase;}
 .habit-row{display:grid;grid-template-columns:220px repeat(7,1fr);border-bottom:1px solid #eee;align-items:center;}
 .habit-row:last-child{border-bottom:none;}
-.habit-name{padding:10px 16px;font-size:14px;font-weight:600;color:#333;display:flex;align-items:center;gap:8px;cursor:pointer;}
+.habit-name{padding:10px 16px;font-size:14px;font-weight:600;color:#333;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;}
 .habit-name:hover .edit-icon{opacity:1;}
 .edit-icon{opacity:0;font-size:11px;color:#aaa;transition:opacity .15s;}
-.habit-icon{font-size:18px;}
+.habit-icon{font-size:18px;flex-shrink:0;}
 .day-cell{display:flex;align-items:center;justify-content:center;padding:8px;}
 .check-btn{width:28px;height:28px;border-radius:50%;border:2px solid #b5bce8;background:white;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
 .check-btn.done{background:#7b8ec8;border-color:#7b8ec8;color:white;}
-.check-btn:hover{border-color:#7b8ec8;}
-.check-btn.inactive{background:#f5f5f5;border-color:#e0e0e0;cursor:default;opacity:0.35;}
+.check-btn:hover:not(.inactive){border-color:#7b8ec8;}
+.check-btn.inactive{background:#f5f5f5;border-color:#e8e8e8;cursor:default;opacity:0.3;}
 .stats-row{display:grid;grid-template-columns:220px 1fr;border-bottom:1px solid #eee;background:#fafbff;}
 .stats-label{padding:8px 16px;font-size:12px;color:#999;font-weight:600;}
 .stats-bar-wrap{padding:8px 12px;display:flex;align-items:center;gap:10px;}
@@ -42,7 +42,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#e8ecf8;display:flex;fle
 .donuts{display:flex;gap:16px;flex-wrap:wrap;}
 .donut-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;}
 .donut-label{font-size:11px;color:#666;font-weight:600;text-align:center;max-width:70px;}
-/* PIN SCREEN */
 #pin-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;z-index:9999;}
 .pin-box{background:white;border-radius:20px;padding:40px 50px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);min-width:320px;}
 .pin-title{font-size:22px;font-weight:900;color:#7b8ec8;margin-bottom:8px;letter-spacing:2px;}
@@ -55,12 +54,11 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#e8ecf8;display:flex;fle
 .pin-key:hover{background:#f0f3ff;border-color:#7b8ec8;color:#7b8ec8;}
 .pin-key:active{background:#7b8ec8;color:white;}
 .pin-error{color:#e74c3c;font-size:13px;margin-top:12px;min-height:20px;}
-/* DAYS MODAL */
 #days-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:8888;}
 #days-modal.open{display:flex;}
 .days-box{background:white;border-radius:16px;padding:30px;min-width:340px;box-shadow:0 10px 40px rgba(0,0,0,0.2);}
 .days-box h3{font-size:16px;font-weight:800;color:#333;margin-bottom:6px;}
-.days-box .days-subtitle{font-size:12px;color:#999;margin-bottom:20px;}
+.days-subtitle{font-size:12px;color:#999;margin-bottom:20px;}
 .days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:20px;}
 .day-toggle{padding:8px 4px;text-align:center;border-radius:10px;border:2px solid #e0e4f0;cursor:pointer;font-size:12px;font-weight:700;color:#aaa;background:white;transition:all .15s;}
 .day-toggle.on{background:#7b8ec8;border-color:#7b8ec8;color:white;}
@@ -74,12 +72,11 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#e8ecf8;display:flex;fle
 </head>
 <body>
 
-<!-- PIN SCREEN -->
 <div id="pin-screen">
   <div class="pin-box">
     <div class="pin-title">HABIT TRACKER</div>
     <div class="pin-subtitle">Entrez votre code PIN</div>
-    <div class="pin-dots" id="pin-dots">
+    <div class="pin-dots">
       <div class="pin-dot" id="dot0"></div>
       <div class="pin-dot" id="dot1"></div>
       <div class="pin-dot" id="dot2"></div>
@@ -95,19 +92,18 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#e8ecf8;display:flex;fle
       <button class="pin-key" onclick="pinPress('7')">7</button>
       <button class="pin-key" onclick="pinPress('8')">8</button>
       <button class="pin-key" onclick="pinPress('9')">9</button>
-      <button class="pin-key" onclick="pinClear()" style="font-size:14px">✕</button>
+      <button class="pin-key" onclick="pinClear()" style="font-size:14px">x</button>
       <button class="pin-key" onclick="pinPress('0')">0</button>
-      <button class="pin-key" onclick="pinBackspace()" style="font-size:14px">⌫</button>
+      <button class="pin-key" onclick="pinBackspace()" style="font-size:14px">&lt;</button>
     </div>
     <div class="pin-error" id="pin-error"></div>
   </div>
 </div>
 
-<!-- DAYS MODAL -->
 <div id="days-modal">
   <div class="days-box">
     <h3 id="modal-habit-name">Modifier les jours</h3>
-    <div class="days-subtitle">Sélectionne les jours actifs pour cette habitude</div>
+    <div class="days-subtitle">Selectionne les jours actifs pour cette habitude</div>
     <div class="days-grid" id="days-grid"></div>
     <div class="days-actions">
       <button class="btn-cancel" onclick="closeDaysModal()">Annuler</button>
@@ -116,16 +112,14 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#e8ecf8;display:flex;fle
   </div>
 </div>
 
-<!-- MAIN APP -->
 <div id="app" style="display:none;width:100%;align-items:center;flex-direction:column;">
-<div style="width:960px;padding:10px 0;text-align:right;font-size:12px;color:#aaa;">
-  <span id="lock-btn" onclick="lockApp()" style="cursor:pointer;padding:4px 10px;border-radius:6px;background:#eee;">🔒 Verrouiller</span>
-</div>
-<div class="container" id="main-container"></div>
+  <div style="width:960px;padding:10px 0;text-align:right;font-size:12px;color:#aaa;">
+    <span onclick="lockApp()" style="cursor:pointer;padding:4px 10px;border-radius:6px;background:#eee;">Verrouiller</span>
+  </div>
+  <div class="container" id="main-container"></div>
 </div>
 
 <script>
-// ---- PIN LOGIC ----
 var PIN_CORRECT = '1234';
 var SESSION_KEY = 'ht_unlocked';
 var pinInput = '';
@@ -137,305 +131,254 @@ function pinPress(digit) {
   if (pinInput.length === 4) { setTimeout(checkPin, 150); }
 }
 function pinBackspace() {
-  pinInput = pinInput.slice(0, -1);
-  updateDots();
+  pinInput = pinInput.slice(0,-1); updateDots();
   document.getElementById('pin-error').textContent = '';
 }
 function pinClear() {
-  pinInput = '';
-  updateDots();
+  pinInput = ''; updateDots();
   document.getElementById('pin-error').textContent = '';
 }
 function updateDots() {
-  for (var i = 0; i < 4; i++) {
-    var dot = document.getElementById('dot' + i);
-    if (i < pinInput.length) { dot.classList.add('filled'); } else { dot.classList.remove('filled'); }
+  for (var i=0;i<4;i++) {
+    var d=document.getElementById('dot'+i);
+    if (i<pinInput.length) d.classList.add('filled'); else d.classList.remove('filled');
   }
 }
 function checkPin() {
-  if (pinInput === PIN_CORRECT) {
-    sessionStorage.setItem(SESSION_KEY, '1');
-    document.getElementById('pin-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'flex';
+  if (pinInput===PIN_CORRECT) {
+    sessionStorage.setItem(SESSION_KEY,'1');
+    document.getElementById('pin-screen').style.display='none';
+    document.getElementById('app').style.display='flex';
     render();
   } else {
-    document.getElementById('pin-error').textContent = 'Code incorrect, réessayez';
-    pinInput = '';
-    updateDots();
+    document.getElementById('pin-error').textContent='Code incorrect, reessayez';
+    pinInput=''; updateDots();
   }
 }
 function lockApp() {
   sessionStorage.removeItem(SESSION_KEY);
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('pin-screen').style.display = 'flex';
-  pinInput = '';
-  updateDots();
-  document.getElementById('pin-error').textContent = '';
+  document.getElementById('app').style.display='none';
+  document.getElementById('pin-screen').style.display='flex';
+  pinInput=''; updateDots();
+  document.getElementById('pin-error').textContent='';
 }
-if (sessionStorage.getItem(SESSION_KEY) === '1') {
-  document.getElementById('pin-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
+if (sessionStorage.getItem(SESSION_KEY)==='1') {
+  document.getElementById('pin-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
 }
-document.addEventListener('keydown', function(e) {
-  if (document.getElementById('pin-screen').style.display !== 'none') {
-    if (e.key >= '0' && e.key <= '9') pinPress(e.key);
-    else if (e.key === 'Backspace') pinBackspace();
-    else if (e.key === 'Escape') pinClear();
+document.addEventListener('keydown',function(e){
+  if (document.getElementById('pin-screen').style.display!=='none') {
+    if (e.key>='0'&&e.key<='9') pinPress(e.key);
+    else if (e.key==='Backspace') pinBackspace();
+    else if (e.key==='Escape') pinClear();
   }
 });
 
-// ---- DAYS MODAL ----
-var DAYS_NAMES = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
-var _editingHabitIdx = -1;
-var _tempDays = [];
+var DAYS_NAMES=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+var _editIdx=-1, _tempDays=[];
 
 function openDaysModal(idx) {
-  _editingHabitIdx = idx;
-  var habit = _data[idx];
-  _tempDays = habit.days ? habit.days.slice() : [0,1,2,3,4,5,6];
-  document.getElementById('modal-habit-name').textContent = habit.i + ' ' + habit.n;
-  var grid = document.getElementById('days-grid');
-  grid.innerHTML = '';
-  for (var d = 0; d < 7; d++) {
-    var btn = document.createElement('button');
-    btn.className = 'day-toggle' + (_tempDays.indexOf(d) >= 0 ? ' on' : '');
-    btn.textContent = DAYS_NAMES[d];
-    btn.setAttribute('data-day', d);
-    btn.onclick = function() {
-      var day = parseInt(this.getAttribute('data-day'));
-      var pos = _tempDays.indexOf(day);
-      if (pos >= 0) { _tempDays.splice(pos, 1); this.classList.remove('on'); }
-      else { _tempDays.push(day); this.classList.add('on'); }
+  _editIdx=idx;
+  var h=_data[idx];
+  _tempDays=(h.days?h.days.slice():[0,1,2,3,4,5,6]);
+  document.getElementById('modal-habit-name').textContent=h.i+' '+h.n;
+  var g=document.getElementById('days-grid');
+  g.innerHTML='';
+  for (var d=0;d<7;d++) {
+    var btn=document.createElement('button');
+    btn.className='day-toggle'+(_tempDays.indexOf(d)>=0?' on':'');
+    btn.textContent=DAYS_NAMES[d];
+    btn.setAttribute('data-day',d);
+    btn.onclick=function(){
+      var day=parseInt(this.getAttribute('data-day'));
+      var pos=_tempDays.indexOf(day);
+      if (pos>=0){_tempDays.splice(pos,1);this.classList.remove('on');}
+      else{_tempDays.push(day);this.classList.add('on');}
     };
-    grid.appendChild(btn);
+    g.appendChild(btn);
   }
   document.getElementById('days-modal').classList.add('open');
 }
 function closeDaysModal() {
   document.getElementById('days-modal').classList.remove('open');
-  _editingHabitIdx = -1;
+  _editIdx=-1;
 }
 function saveDays() {
-  if (_editingHabitIdx >= 0) {
-    _data[_editingHabitIdx].days = _tempDays.slice().sort(function(a,b){return a-b;});
-    saveState();
-    render();
+  if (_editIdx>=0) {
+    _data[_editIdx].days=_tempDays.slice().sort(function(a,b){return a-b;});
+    saveState(); render();
   }
   closeDaysModal();
 }
-document.getElementById('days-modal').addEventListener('click', function(e) {
-  if (e.target === this) closeDaysModal();
+document.getElementById('days-modal').addEventListener('click',function(e){
+  if(e.target===this) closeDaysModal();
 });
 
-// ---- TRACKER LOGIC ----
-var MONTHS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
-var _yr, _mo, _week, _data, _C;
+var MONTHS=['Janvier','Fevrier','Mars','Avril','Mai','Juin','Juillet','Aout','Septembre','Octobre','Novembre','Decembre'];
+var _yr,_mo,_week,_data,_C;
 
 function loadState() {
-  var saved = localStorage.getItem('habitTrackerState');
+  var saved=localStorage.getItem('habitTrackerState');
   if (saved) {
-    var s = JSON.parse(saved);
-    _yr = s.yr || new Date().getFullYear();
-    _mo = s.mo !== undefined ? s.mo : new Date().getMonth();
-    _week = s.week || 0;
-    _data = s.data || getDefaultHabits();
-    _C = s.C || {};
+    var s=JSON.parse(saved);
+    _yr=s.yr||new Date().getFullYear();
+    _mo=s.mo!==undefined?s.mo:new Date().getMonth();
+    _week=s.week||0;
+    _data=s.data||getDefaultHabits();
+    _C=s.C||{};
   } else {
-    var now = new Date();
-    _yr = now.getFullYear();
-    _mo = now.getMonth();
-    _week = 0;
-    _data = getDefaultHabits();
-    _C = {};
+    var now=new Date();
+    _yr=now.getFullYear(); _mo=now.getMonth(); _week=0;
+    _data=getDefaultHabits(); _C={};
   }
-  // Ensure all habits have days array
-  for (var i = 0; i < _data.length; i++) {
-    if (!_data[i].days) { _data[i].days = [0,1,2,3,4,5,6]; }
+  for (var i=0;i<_data.length;i++) {
+    if (!_data[i].days) _data[i].days=[0,1,2,3,4,5,6];
   }
 }
 function saveState() {
-  localStorage.setItem('habitTrackerState', JSON.stringify({yr:_yr, mo:_mo, week:_week, data:_data, C:_C}));
+  localStorage.setItem('habitTrackerState',JSON.stringify({yr:_yr,mo:_mo,week:_week,data:_data,C:_C}));
 }
 function getDefaultHabits() {
   return [
-    {n:'Méditation',i:'🧘',days:[0,1,2,3,4,5,6]},
-    {n:'Sport',i:'🏃',days:[0,2,4]},
-    {n:'Lecture',i:'📚',days:[0,1,2,3,4,5,6]},
-    {n:'Eau (2L)',i:'💧',days:[0,1,2,3,4,5,6]},
-    {n:'Sommeil (8h)',i:'😴',days:[0,1,2,3,4,5,6]}
+    {n:'Meditation',i:'Meditation',days:[0,1,2,3,4,5,6]},
+    {n:'Sport',i:'Sport',days:[0,2,4]},
+    {n:'Lecture',i:'Lecture',days:[0,1,2,3,4,5,6]},
+    {n:'Eau 2L',i:'Eau',days:[0,1,2,3,4,5,6]},
+    {n:'Sommeil 8h',i:'Sommeil',days:[0,1,2,3,4,5,6]}
   ];
 }
-function getWeeks(yr, mo) {
-  var weeks = [];
-  var d = new Date(yr, mo, 1);
-  var dow = d.getDay();
-  var startOffset = (dow === 0) ? -6 : 1 - dow;
-  var start = new Date(d);
-  start.setDate(start.getDate() + startOffset);
-  for (var w = 0; w < 6; w++) {
-    var days = [];
-    var weekStart = new Date(start);
-    weekStart.setDate(weekStart.getDate() + w * 7);
-    for (var d2 = 0; d2 < 7; d2++) {
-      var day = new Date(weekStart);
-      day.setDate(day.getDate() + d2);
-      days.push(day);
-    }
-    if (days.some(function(day){ return day.getMonth() === mo; })) { weeks.push(days); }
+function getWeeks(yr,mo) {
+  var weeks=[], d=new Date(yr,mo,1), dow=d.getDay();
+  var startOff=(dow===0)?-6:1-dow;
+  var start=new Date(d); start.setDate(start.getDate()+startOff);
+  for (var w=0;w<6;w++) {
+    var days=[], ws=new Date(start); ws.setDate(ws.getDate()+w*7);
+    for (var d2=0;d2<7;d2++) { var day=new Date(ws); day.setDate(day.getDate()+d2); days.push(day); }
+    if (days.some(function(day){return day.getMonth()===mo;})) weeks.push(days);
   }
   return weeks;
 }
-function cKey(yr, mo, wk, habit, dayIdx) {
-  return yr + '-' + mo + '-' + wk + '-' + habit + '-' + dayIdx;
-}
-function toggle(yr, mo, wk, habit, dayIdx, isActive) {
-  if (!isActive) return;
-  var k = cKey(yr, mo, wk, habit, dayIdx);
-  if (_C[k]) { delete _C[k]; } else { _C[k] = 1; }
-  saveState();
-  render();
+function cKey(yr,mo,wk,habit,di) { return yr+'-'+mo+'-'+wk+'-'+habit+'-'+di; }
+function toggle(yr,mo,wk,habit,di) {
+  var k=cKey(yr,mo,wk,habit,di);
+  if (_C[k]) delete _C[k]; else _C[k]=1;
+  saveState(); render();
 }
 function changeMonth(delta) {
-  _mo += delta;
-  if (_mo > 11) { _mo = 0; _yr++; }
-  if (_mo < 0) { _mo = 11; _yr--; }
-  _week = 0;
-  saveState();
-  render();
+  _mo+=delta;
+  if (_mo>11){_mo=0;_yr++;} if (_mo<0){_mo=11;_yr--;}
+  _week=0; saveState(); render();
 }
-function drawDonut(canvas, pct) {
-  var ctx = canvas.getContext('2d');
-  var cx = canvas.width/2, cy = canvas.height/2, r = cx - 5;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
-  ctx.strokeStyle = '#e8ecf0'; ctx.lineWidth = 6; ctx.stroke();
-  if (pct > 0) {
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, -Math.PI/2, -Math.PI/2 + (Math.PI*2*pct));
-    ctx.strokeStyle = '#7b8ec8'; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.stroke();
+function drawDonut(canvas,pct) {
+  var ctx=canvas.getContext('2d');
+  var cx=canvas.width/2,cy=canvas.height/2,r=cx-5;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle='#e8ecf0';ctx.lineWidth=6;ctx.stroke();
+  if(pct>0){
+    ctx.beginPath();ctx.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+(Math.PI*2*pct));
+    ctx.strokeStyle='#7b8ec8';ctx.lineWidth=6;ctx.lineCap='round';ctx.stroke();
   }
-  ctx.fillStyle = '#555'; ctx.font = 'bold 13px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(Math.round(pct*100)+'%', cx, cy);
+  ctx.fillStyle='#555';ctx.font='bold 13px Arial';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(Math.round(pct*100)+'%',cx,cy);
 }
 function render() {
-  var container = document.getElementById('main-container');
+  var container=document.getElementById('main-container');
   if (!container) return;
-  var weeks = getWeeks(_yr, _mo);
-  if (_week >= weeks.length) _week = 0;
-  var currentWeek = weeks[_week];
-  var html = '';
+  var weeks=getWeeks(_yr,_mo);
+  if (_week>=weeks.length) _week=0;
+  var cw=weeks[_week];
+  var html='';
 
-  // Month nav
-  html += '<div class="month-nav">';
-  html += '<button onclick="changeMonth(-1)">&#8249;</button>';
-  html += '<div class="month-label">' + MONTHS[_mo] + ' ' + _yr + '</div>';
-  html += '<button onclick="changeMonth(1)">&#8250;</button>';
-  html += '</div>';
+  html+='<div class="month-nav"><button onclick="changeMonth(-1)">&lsaquo;</button><div class="month-label">'+MONTHS[_mo]+' '+_yr+'</div><button onclick="changeMonth(1)">&rsaquo;</button></div>';
 
-  // Week tabs
-  html += '<div class="weeks-tabs">';
-  for (var wt = 0; wt < weeks.length; wt++) {
-    var wdays = weeks[wt];
-    var activeClass = wt === _week ? ' active' : '';
-    var sdStr = wdays[0].getDate() + '/' + (wdays[0].getMonth()+1);
-    var edStr = wdays[6].getDate() + '/' + (wdays[6].getMonth()+1);
-    html += '<div class="week-tab' + activeClass + '" onclick="selectWeek(' + wt + ')">S' + (wt+1) + '<br><small>' + sdStr + '-' + edStr + '</small></div>';
+  html+='<div class="weeks-tabs">';
+  for (var wt=0;wt<weeks.length;wt++) {
+    var wkd=weeks[wt];
+    var ac=wt===_week?' active':'';
+    var sd=wkd[0].getDate()+'/'+(wkd[0].getMonth()+1);
+    var ed=wkd[6].getDate()+'/'+(wkd[6].getMonth()+1);
+    html+='<div class="week-tab'+ac+'" onclick="selectWeek('+wt+')">S'+(wt+1)+'<br><small>'+sd+'-'+ed+'</small></div>';
   }
-  html += '</div>';
+  html+='</div>';
 
-  // Day header
-  html += '<div class="week-header"><div></div>';
-  for (var di = 0; di < 7; di++) {
-    var dayDate = currentWeek[di];
-    var isThisMonth = dayDate.getMonth() === _mo;
-    html += '<div class="day-name" style="color:' + (isThisMonth ? '#7b8ec8' : '#bbb') + '">' + DAYS_NAMES[di] + '<br>' + dayDate.getDate() + '</div>';
+  html+='<div class="week-header"><div></div>';
+  for (var di=0;di<7;di++) {
+    var dd=cw[di], itm=dd.getMonth()===_mo;
+    html+='<div class="day-name" style="color:'+(itm?'#7b8ec8':'#bbb')+'">'+DAYS_NAMES[di]+'<br>'+dd.getDate()+'</div>';
   }
-  html += '</div>';
+  html+='</div>';
 
-  // Habit rows
-  for (var hi = 0; hi < _data.length; hi++) {
-    var habit = _data[hi];
-    var activeDays = habit.days || [0,1,2,3,4,5,6];
-    // Build days label for display
-    var daysLabel = activeDays.length === 7 ? 'Tous les jours' : activeDays.map(function(d){ return DAYS_NAMES[d]; }).join(', ');
-    html += '<div class="habit-row">';
-    html += '<div class="habit-name" onclick="openDaysModal(' + hi + '" title="Modifier les jours actifs"><span class="habit-icon">' + habit.i + '</span><span>' + habit.n + '<br><span style="font-size:10px;color:#aaa;font-weight:400;">' + daysLabel + '</span></span><span class="edit-icon">✏️</span></div>';
-    for (var di2 = 0; di2 < 7; di2++) {
-      var isActive = activeDays.indexOf(di2) >= 0;
-      var key = cKey(_yr, _mo, _week, habit.n, di2);
-      var done = _C[key] ? ' done' : '';
-      var inactiveClass = !isActive ? ' inactive' : '';
-      var clickHandler = isActive ? 'toggle(' + _yr + ',' + _mo + ',' + _week + ','' + habit.n + '',' + di2 + ',true)' : '';
-      html += '<div class="day-cell"><button class="check-btn' + done + inactiveClass + '" ' + (clickHandler ? 'onclick="' + clickHandler + '"' : '') + '>' + (done ? '✓' : '') + '</button></div>';
+  for (var hi=0;hi<_data.length;hi++) {
+    var hab=_data[hi];
+    var adays=hab.days||[0,1,2,3,4,5,6];
+    var dlabel=adays.length===7?'Tous les jours':adays.map(function(d){return DAYS_NAMES[d];}).join(', ');
+    html+='<div class="habit-row">';
+    html+='<div class="habit-name" onclick="openDaysModal('+hi+')" title="Modifier les jours actifs">';
+    html+='<span class="habit-icon">'+hab.i+'</span>';
+    html+='<span>'+hab.n+'<br><span style="font-size:10px;color:#aaa;font-weight:400;">'+dlabel+'</span></span>';
+    html+='<span class="edit-icon"> ✏</span></div>';
+    for (var di2=0;di2<7;di2++) {
+      var isA=adays.indexOf(di2)>=0;
+      var k=cKey(_yr,_mo,_week,hab.n,di2);
+      var done=_C[k]?' done':'';
+      var inact=!isA?' inactive':'';
+      var oc=isA?'onclick="toggle('+_yr+','+_mo+','+_week+',''+hab.n+'','+di2+')"':'';
+      html+='<div class="day-cell"><button class="check-btn'+done+inact+'" '+oc+'>'+(done?'v':'')+'</button></div>';
     }
-    html += '</div>';
+    html+='</div>';
   }
 
-  // Stats per habit (this week, only active days)
-  html += '<div style="background:#f5f7ff;border-top:2px solid #e0e4f0;padding:10px 0;">';
-  for (var hi2 = 0; hi2 < _data.length; hi2++) {
-    var habit2 = _data[hi2];
-    var activeDays2 = habit2.days || [0,1,2,3,4,5,6];
-    var done2 = 0;
-    for (var di3 = 0; di3 < activeDays2.length; di3++) {
-      if (_C[cKey(_yr, _mo, _week, habit2.n, activeDays2[di3])]) done2++;
-    }
-    var total2 = activeDays2.length;
-    var pct2 = total2 > 0 ? done2 / total2 : 0;
-    html += '<div class="stats-row"><div class="stats-label">' + habit2.n + '</div>';
-    html += '<div class="stats-bar-wrap"><div class="stats-bar"><div class="stats-fill" style="width:' + Math.round(pct2*100) + '%"></div></div><div class="stats-pct">' + done2 + '/' + total2 + '</div></div></div>';
+  html+='<div style="background:#f5f7ff;border-top:2px solid #e0e4f0;padding:10px 0;">';
+  for (var hi2=0;hi2<_data.length;hi2++) {
+    var hab2=_data[hi2], adays2=hab2.days||[0,1,2,3,4,5,6];
+    var dn=0;
+    for (var x=0;x<adays2.length;x++) { if(_C[cKey(_yr,_mo,_week,hab2.n,adays2[x])]) dn++; }
+    var tot=adays2.length, pct=tot>0?dn/tot:0;
+    html+='<div class="stats-row"><div class="stats-label">'+hab2.n+'</div>';
+    html+='<div class="stats-bar-wrap"><div class="stats-bar"><div class="stats-fill" style="width:'+Math.round(pct*100)+'%"></div></div><div class="stats-pct">'+dn+'/'+tot+'</div></div></div>';
   }
-  html += '</div>';
+  html+='</div>';
 
-  // Monthly summary donuts
-  html += '<div class="summary-section"><div class="summary-title">Résumé du mois</div><div class="donuts" id="donuts-wrap">';
-  for (var hi3 = 0; hi3 < _data.length; hi3++) {
-    var habit3 = _data[hi3];
-    var activeDays3 = habit3.days || [0,1,2,3,4,5,6];
-    var doneCount = 0, totalDays = 0;
-    for (var wk2 = 0; wk2 < weeks.length; wk2++) {
-      var wkDays = weeks[wk2];
-      for (var di4 = 0; di4 < 7; di4++) {
-        if (wkDays[di4].getMonth() === _mo && activeDays3.indexOf(di4) >= 0) {
-          totalDays++;
-          if (_C[cKey(_yr, _mo, wk2, habit3.n, di4)]) doneCount++;
+  html+='<div class="summary-section"><div class="summary-title">Resume du mois</div><div class="donuts" id="donuts-wrap">';
+  for (var hi3=0;hi3<_data.length;hi3++) {
+    var hab3=_data[hi3], adays3=hab3.days||[0,1,2,3,4,5,6];
+    var dc=0,td=0;
+    for (var wk2=0;wk2<weeks.length;wk2++) {
+      var wkd2=weeks[wk2];
+      for (var di4=0;di4<7;di4++) {
+        if (wkd2[di4].getMonth()===_mo&&adays3.indexOf(di4)>=0) {
+          td++;
+          if(_C[cKey(_yr,_mo,wk2,hab3.n,di4)]) dc++;
         }
       }
     }
-    var p = totalDays > 0 ? doneCount / totalDays : 0;
-    html += '<div class="donut-wrap"><canvas id="donut_' + hi3 + '" width="70" height="70"></canvas><div class="donut-label">' + habit3.i + ' ' + habit3.n + '</div></div>';
+    var p=td>0?dc/td:0;
+    html+='<div class="donut-wrap"><canvas id="donut_'+hi3+'" width="70" height="70"></canvas><div class="donut-label">'+hab3.n+'</div></div>';
   }
-  html += '</div></div>';
-  container.innerHTML = html;
+  html+='</div></div>';
+  container.innerHTML=html;
 
-  // Draw donuts
-  for (var hi4 = 0; hi4 < _data.length; hi4++) {
-    var habit4 = _data[hi4];
-    var activeDays4 = habit4.days || [0,1,2,3,4,5,6];
-    var doneCount2 = 0, totalDays2 = 0;
-    for (var wk3 = 0; wk3 < weeks.length; wk3++) {
-      var wkDays2 = weeks[wk3];
-      for (var di5 = 0; di5 < 7; di5++) {
-        if (wkDays2[di5].getMonth() === _mo && activeDays4.indexOf(di5) >= 0) {
-          totalDays2++;
-          if (_C[cKey(_yr, _mo, wk3, habit4.n, di5)]) doneCount2++;
+  for (var hi4=0;hi4<_data.length;hi4++) {
+    var hab4=_data[hi4], adays4=hab4.days||[0,1,2,3,4,5,6];
+    var dc2=0,td2=0;
+    for (var wk3=0;wk3<weeks.length;wk3++) {
+      var wkd3=weeks[wk3];
+      for (var di5=0;di5<7;di5++) {
+        if (wkd3[di5].getMonth()===_mo&&adays4.indexOf(di5)>=0) {
+          td2++;
+          if(_C[cKey(_yr,_mo,wk3,hab4.n,di5)]) dc2++;
         }
       }
     }
-    var p2 = totalDays2 > 0 ? doneCount2 / totalDays2 : 0;
-    var canvas = document.getElementById('donut_' + hi4);
-    if (canvas) drawDonut(canvas, p2);
+    var p2=td2>0?dc2/td2:0;
+    var cv=document.getElementById('donut_'+hi4);
+    if(cv) drawDonut(cv,p2);
   }
 }
-function selectWeek(w) {
-  _week = w;
-  saveState();
-  render();
-}
+function selectWeek(w) { _week=w; saveState(); render(); }
 
-// Init
 loadState();
-if (sessionStorage.getItem(SESSION_KEY) === '1') { render(); }
+if (sessionStorage.getItem(SESSION_KEY)==='1') render();
 </script>
 </body>
 </html>
