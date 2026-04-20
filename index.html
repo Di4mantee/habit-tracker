@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Habit Tracker</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#e8ecf8;display:flex;flex-direction:column;align-items:center;padding:20px;min-height:100vh;}
+.container{width:960px;background:white;border-radius:14px;overflow:hidden;box-shadow:0 6px 30px rgba(0,0,0,.18);}
+.month-nav{display:flex;align-items:center;justify-content:center;gap:20px;background:#7b8ec8;padding:14px 20px;}
+.month-nav button{background:rgba(255,255,255,.2);border:none;color:white;font-size:22px;cursor:pointer;font-weight:bold;padding:4px 14px;border-radius:6px;}
+.month-nav button:hover{background:rgba(255,255,255,.35);}
+.month-label{color:white;font-size:26px;font-weight:900;letter-spacing:3px;min-width:260px;text-align:center;}
+.weeks-tabs{display:flex;background:#d8dff5;border-bottom:2px solid #b5bce8;}
+.week-tab{flex:1;text-align:center;padding:11px;cursor:pointer;font-weight:600;font-size:13px;color:#555;border-right:1px solid #c5cceb;}
+.week-tab:last-child{border-right:none;}
+.week-tab.active{background:#f5c87a;color:#333;border-bottom:3px solid #e8a030;margin-bottom:-2px;}
+.week-tab:hover:not(.active){background:#c8d0f0;}
+.week-header{background:#f5c87a;padding:22px 30px;display:flex;align-items:center;justify-content:space-between;}
+.week-info h3{font-size:20px;font-weight:900;color:#333;letter-spacing:2px;}
+.week-info p{font-size:14px;color:#666;margin-top:4px;}
+.donut-wrap{position:relative;width:130px;height:130px;}
+.donut-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.donut-pct{font-size:24px;font-weight:900;color:#222;}
+.donut-sub{font-size:10px;color:#777;font-weight:600;}
+.legend{display:flex;flex-direction:column;gap:8px;}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:13px;color:#444;}
+.legend-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;}
+.habits-table{width:100%;border-collapse:collapse;}
+.habits-table thead th{background:#f5c87a;padding:10px 6px;font-size:12px;font-weight:700;color:#444;text-align:center;border:1px solid #ddd;}
+.habits-table thead th.habit-col{text-align:left;padding-left:18px;background:#e8956d;color:white;font-size:14px;letter-spacing:1px;min-width:220px;}
+.habits-table thead th.pct-col{background:#e8956d;color:white;min-width:75px;}
+.habits-table thead th.act-col{background:#e8956d;color:white;width:36px;}
+.section-row td{background:#d8dcf0;font-weight:700;font-size:13px;color:#3a3a6a;padding:7px 10px 7px 18px;border:1px solid #c8cce0;}
+.section-row .section-inner{display:flex;align-items:center;justify-content:space-between;}
+.section-row .section-name{flex:1;}
+.btn-add-section{background:#7b8ec8;color:white;border:none;border-radius:5px;padding:3px 9px;font-size:12px;cursor:pointer;font-weight:700;}
+.btn-add-section:hover{background:#5a6fa8;}
+.habit-row td{padding:6px 5px;border:1px solid #e8e8e8;text-align:center;font-size:13px;background:white;}
+.habit-row:hover td{background:#fffae8;}
+.habit-row td.name-col{text-align:left;padding-left:12px;background:inherit;}
+.habit-name{display:inline-block;padding:2px 4px;border-radius:4px;cursor:text;min-width:60px;}
+.habit-name:hover{background:#f0f0f0;}
+.habit-name-input{border:1px solid #7b8ec8;border-radius:4px;padding:2px 6px;font-size:13px;font-family:inherit;width:160px;outline:none;}
+.cb-wrap{display:flex;justify-content:center;}
+.cb-wrap input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:#3b5bdb;}
+.cb-wrap input:disabled{opacity:.25;cursor:default;}
+.pct-cell{font-weight:800;font-size:12px;padding:5px 4px!important;}
+.pct-bar{height:5px;background:#eee;border-radius:3px;margin-top:3px;overflow:hidden;}
+.pct-bar-fill{height:100%;border-radius:3px;transition:width .4s;}
+.act-cell{padding:4px 3px!important;white-space:nowrap;}
+.btn-del{background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;padding:2px 4px;border-radius:3px;line-height:1;}
+.btn-del:hover{color:#e53e3e;background:#ffe5e5;}
+.add-row td{padding:4px 10px 6px 18px;border:none;background:white;}
+.btn-add-habit{background:none;border:1px dashed #aaa;color:#888;border-radius:5px;padding:3px 12px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;}
+.btn-add-habit:hover{background:#f5f5f5;border-color:#7b8ec8;color:#7b8ec8;}
+.footer{background:#f5c87a;padding:10px 18px;font-size:12px;color:#666;text-align:center;border-top:1px solid #e0c060;}
+.add-section-wrap{padding:8px 18px;background:#eef0fa;border-top:1px solid #d0d5ee;}
+.btn-add-section-global{background:#7b8ec8;color:white;border:none;border-radius:6px;padding:5px 16px;font-size:12px;cursor:pointer;font-weight:700;}
+.btn-add-section-global:hover{background:#5a6fa8;}
+@media(max-width:980px){.container{width:100%;}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="month-nav">
+    <button id="prevM" onclick="changeMonth(-1)">&#8249;</button>
+    <div class="month-label" id="ml"></div>
+    <button id="nextM" onclick="changeMonth(1)">&#8250;</button>
+  </div>
+  <div class="weeks-tabs" id="wt"></div>
+  <div class="week-header">
+    <div class="week-info"><h3 id="wTitle"></h3><p id="wDates"></p></div>
+    <div class="donut-wrap">
+      <canvas id="dc" width="130" height="130"></canvas>
+      <div class="donut-label"><div class="donut-pct" id="dPct">0%</div><div class="donut-sub">reussite</div></div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#3b5bdb"></div><span id="lgD">0 accomplies</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#e8a030"></div><span id="lgL">0 restantes</span></div>
+    </div>
+  </div>
+  <table class="habits-table">
+    <thead><tr>
+      <th class="habit-col">DAILY HABITS</th>
+      <th id="h0"></th><th id="h1"></th><th id="h2"></th><th id="h3"></th>
+      <th id="h4"></th><th id="h5"></th><th id="h6"></th>
+      <th class="pct-col">% Semaine</th>
+      <th class="act-col"></th>
+    </tr></thead>
+    <tbody id="hb"></tbody>
+  </table>
+  <div class="add-section-wrap">
+    <button class="btn-add-section-global" id="btnAddSection">+ Ajouter une section</button>
+  </div>
+  <div class="footer">Double-cliquez sur un nom pour le modifier &nbsp;|&nbsp; + pour ajouter &nbsp;|&nbsp; &#10005; pour supprimer</div>
+</div>
+<script>
+const MFR=['JANVIER','FÉVRIER','MARS','AVRIL','MAI','JUIN','JUILLET','AOÛT','SEPTEMBRE','OCTOBRE','NOVEMBRE','DÉCEMBRE'];
+const DFR=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+
+// Load from localStorage or defaults
+function loadData() {
+  try {
+    const saved = localStorage.getItem('habitTracker_data');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return [
+    {"section":"Bonnes Habitudes","habits":["Meditation","Arroser les plantes","Arroser les bonsai"]},
+    {"section":"Maison","habits":["Machine a laver"]},
+    {"section":"Projets","habits":["Piano","Code Moto","Ecrire","Passe-temps financier"]}
+  ];
+}
+function loadChecks() {
+  try {
+    const saved = localStorage.getItem('habitTracker_checks');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return {};
+}
+function saveAll() {
+  localStorage.setItem('habitTracker_data', JSON.stringify(window._data));
+  localStorage.setItem('habitTracker_checks', JSON.stringify(window._C));
+}
+
+const now = new Date();
+window._data = loadData();
+window._C = loadChecks();
+window._yr = now.getFullYear();
+window._mo = now.getMonth();
+window._w = 0;
+
+function gW(yr,mo){
+  const ws=[];let sd=new Date(yr,mo,1);
+  const dw=sd.getDay(),off=dw===0?6:dw-1;sd.setDate(sd.getDate()-off);
+  for(let n=0;n<6;n++){
+    const ds=[];for(let i=0;i<7;i++){const d=new Date(sd);d.setDate(sd.getDate()+i);ds.push(d);}
+    ws.push(ds);sd.setDate(sd.getDate()+7);
+    if(ds.every(d=>d.getMonth()!==mo&&d.getFullYear()>=yr))break;
+  }
+  return ws;
+}
+
+function getCk(h,w,di){
+  const k=window._yr+'-'+window._mo+'-'+w+'-'+h+'-'+di;
+  return window._C[k]===true;
+}
+function setCk(h,w,di,v){
+  const k=window._yr+'-'+window._mo+'-'+w+'-'+h+'-'+di;
+  window._C[k]=v;
+  saveAll();
+}
+
+function drawDonut(done,total){
+  const c=document.getElementById('dc');const ctx=c.getContext('2d');
+  ctx.clearRect(0,0,130,130);
+  ctx.beginPath();ctx.arc(65,65,48,0,Math.PI*2);ctx.strokeStyle='#e0e0e0';ctx.lineWidth=18;ctx.stroke();
+  const dp=total>0?done/total:0;
+  if(dp>0){ctx.beginPath();ctx.arc(65,65,48,-Math.PI/2,-Math.PI/2+dp*Math.PI*2);ctx.strokeStyle='#3b5bdb';ctx.lineWidth=18;ctx.lineCap='round';ctx.stroke();}
+  const lp=total>0?(total-done)/total:1;
+  if(lp>0&&dp>0){ctx.beginPath();ctx.arc(65,65,48,-Math.PI/2+dp*Math.PI*2,-Math.PI/2+dp*Math.PI*2+lp*Math.PI*2);ctx.strokeStyle='#e8a030';ctx.lineWidth=18;ctx.lineCap='round';ctx.stroke();}
+  else if(lp>0){ctx.beginPath();ctx.arc(65,65,48,-Math.PI/2,-Math.PI/2+lp*Math.PI*2);ctx.strokeStyle='#e8a030';ctx.lineWidth=18;ctx.lineCap='butt';ctx.stroke();}
+}
+
+function changeMonth(d){window._mo+=d;if(window._mo<0){window._mo=11;window._yr--;}if(window._mo>11){window._mo=0;window._yr++;}window._w=0;render();}
+
+function render(){
+  document.getElementById('ml').textContent=MFR[window._mo]+' '+window._yr;
+  const ws=gW(window._yr,window._mo);
+  if(window._w>=ws.length)window._w=ws.length-1;
+  const te=document.getElementById('wt');te.innerHTML='';
+  ws.forEach((d,i)=>{
+    const t=document.createElement('div');
+    t.className='week-tab'+(i===window._w?' active':'');
+    t.textContent='Semaine '+(i+1);
+    t.onclick=()=>{window._w=i;render();};
+    te.appendChild(t);
+  });
+  const wk=ws[window._w];
+  document.getElementById('wTitle').textContent='SEMAINE '+(window._w+1);
+  document.getElementById('wDates').textContent=wk[0].getDate()+'/'+(wk[0].getMonth()+1)+' - '+wk[6].getDate()+'/'+(wk[6].getMonth()+1);
+  wk.forEach((d,i)=>{
+    const th=document.getElementById('h'+i);
+    th.innerHTML=DFR[i]+'<br><small>'+d.getDate()+'</small>';
+    const inM=d.getMonth()===window._mo;
+    th.style.background=inM?'#f5c87a':'#e8e8e8';
+    th.style.color=inM?'#333':'#aaa';
+  });
+  const body=document.getElementById('hb');body.innerHTML='';
+  let tD=0,tP=0;
+  window._data.forEach((sec,si)=>{
+    const secTr=document.createElement('tr');secTr.className='section-row';
+    const secTd=document.createElement('td');secTd.colSpan=10;
+    secTd.innerHTML='<div class="section-inner"><span class="section-name" id="secName_'+si+'"></span><button class="btn-add-section btn-del-sec" data-si="'+si+'" title="Supprimer la section" style="background:none;border:none;color:#aaa;font-size:14px;cursor:pointer;margin-left:6px;padding:1px 5px;border-radius:3px;" onmouseover="this.style.color='#e53e3e';this.style.background='#ffe5e5'" onmouseout="this.style.color='#aaa';this.style.background='none'">&#10005; section</button></div>';
+    const sn=secTd.querySelector('#secName_'+si);
+    sn.textContent=sec.section;
+    sn.style.cssText='cursor:text;padding:2px 6px;border-radius:4px;flex:1;';
+    sn.ondblclick=()=>{
+      const inp=document.createElement('input');inp.value=sec.section;inp.className='habit-name-input';
+      inp.style.fontSize='13px';inp.style.fontWeight='700';
+      sn.replaceWith(inp);inp.focus();inp.select();
+      const save=()=>{window._data[si].section=inp.value||sec.section;saveAll();render();};
+      inp.onblur=save;inp.onkeydown=e=>{if(e.key==='Enter')save();if(e.key==='Escape')render();};
+    };
+    secTd.querySelector('.btn-del-sec').onclick=(e)=>{
+      e.stopPropagation();
+      if(confirm('Supprimer la section "'+sec.section+'" et toutes ses habitudes ?')){
+        window._data.splice(si,1);saveAll();render();
+      }
+    };
+    secTr.appendChild(secTd);body.appendChild(secTr);
+    sec.habits.forEach((hName,hi)=>{
+      const tr=document.createElement('tr');tr.className='habit-row';
+      const tdName=document.createElement('td');tdName.className='name-col';
+      const span=document.createElement('span');span.className='habit-name';span.textContent=hName;
+      span.title='Double-cliquez pour renommer';
+      span.ondblclick=()=>{
+        const inp=document.createElement('input');inp.className='habit-name-input';inp.value=hName;
+        span.replaceWith(inp);inp.focus();inp.select();
+        const save=()=>{window._data[si].habits[hi]=inp.value||hName;saveAll();render();};
+        inp.onblur=save;inp.onkeydown=e=>{if(e.key==='Enter')save();if(e.key==='Escape')render();};
+      };
+      tdName.appendChild(span);tr.appendChild(tdName);
+      let rd=0,rt=0;
+      wk.forEach((d,di)=>{
+        const td=document.createElement('td');
+        const inM=d.getMonth()===window._mo;
+        const cw=document.createElement('div');cw.className='cb-wrap';
+        const cb=document.createElement('input');cb.type='checkbox';cb.checked=getCk(hName,window._w,di);
+        if(!inM){cb.disabled=true;td.style.background='#f5f5f5';}
+        cb.onchange=()=>{setCk(hName,window._w,di,cb.checked);render();};
+        if(inM){rt++;if(cb.checked)rd++;}
+        cw.appendChild(cb);td.appendChild(cw);tr.appendChild(td);
+      });
+      const tp=document.createElement('td');tp.className='pct-cell';
+      const p=rt>0?Math.round(rd/rt*100):0;
+      const col=p>=80?'#22c55e':p>=50?'#e8a030':'#ef4444';
+      tp.innerHTML='<span style="color:'+col+'">'+p+'%</span><div class="pct-bar"><div class="pct-bar-fill" style="width:'+p+'%;background:'+col+'"></div></div>';
+      tr.appendChild(tp);tD+=rd;tP+=rt;
+      const tdAct=document.createElement('td');tdAct.className='act-cell';
+      const btnDel=document.createElement('button');btnDel.className='btn-del';btnDel.textContent='✕';btnDel.title='Supprimer cette habitude';
+      btnDel.onclick=()=>{window._data[si].habits.splice(hi,1);saveAll();render();};
+      tdAct.appendChild(btnDel);tr.appendChild(tdAct);
+      body.appendChild(tr);
+    });
+    const addTr=document.createElement('tr');addTr.className='add-row';
+    const addTd=document.createElement('td');addTd.colSpan=10;
+    const btnAdd=document.createElement('button');btnAdd.className='btn-add-habit';
+    btnAdd.innerHTML='<span style="font-size:16px;line-height:1">+</span> Ajouter une habitude';
+    btnAdd.onclick=()=>{
+      const name=prompt('Nom de la nouvelle habitude :');
+      if(name&&name.trim()){window._data[si].habits.push(name.trim());saveAll();render();}
+    };
+    addTd.appendChild(btnAdd);addTr.appendChild(addTd);body.appendChild(addTr);
+  });
+  const gp=tP>0?Math.round(tD/tP*100):0;
+  document.getElementById('dPct').textContent=gp+'%';
+  document.getElementById('lgD').textContent=tD+' accomplies';
+  document.getElementById('lgL').textContent=(tP-tD)+' restantes';
+  drawDonut(tD,tP);
+}
+
+document.getElementById('btnAddSection').onclick=()=>{
+  const name=prompt('Nom de la nouvelle section :');
+  if(name&&name.trim()){window._data.push({section:name.trim(),habits:[]});saveAll();render();}
+};
+
+// Set current week
+const ws0=gW(window._yr,window._mo);
+const today=new Date();
+for(let i=0;i<ws0.length;i++){
+  if(ws0[i].some(d=>d.getDate()===today.getDate()&&d.getMonth()===today.getMonth()&&d.getFullYear()===today.getFullYear())){
+    window._w=i;break;
+  }
+}
+render();
+</script>
+</body>
+</html>
