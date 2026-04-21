@@ -165,15 +165,12 @@ function cp(){
 function lockApp(){sessionStorage.removeItem(SK);document.getElementById("app").style.display="none";document.getElementById("pin-screen").style.display="flex";pv="";ud();document.getElementById("pin-err").textContent="";}
 if(sessionStorage.getItem(SK)==="1"){document.getElementById("pin-screen").style.display="none";document.getElementById("app").style.display="block";}
 document.addEventListener("keydown",function(e){if(document.getElementById("pin-screen").style.display!=="none"){if(e.key>="0"&&e.key<="9")pp(parseInt(e.key));else if(e.key==="Backspace")pb();else if(e.key==="Escape")pc();}});
-
 var MIDS=["days-modal","add-habit-modal","add-cat-modal","rename-modal"];
 function openModal(id){document.getElementById(id).classList.add("open");}
 function closeModal(n){document.getElementById(MIDS[n]).classList.remove("open");}
 document.querySelectorAll(".modal-bg").forEach(function(m){m.addEventListener("click",function(e){if(e.target===this)this.classList.remove("open");});});
-
 var DN=["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"];
 var MN=["Janvier","Fevrier","Mars","Avril","Mai","Juin","Juillet","Aout","Septembre","Octobre","Novembre","Decembre"];
-
 var editCi=-1,editHi=-1,tmpDays=[];
 function openDaysModal(ci,hi){
   editCi=ci;editHi=hi;
@@ -202,7 +199,6 @@ function saveDays(){
   if(editCi>=0&&editHi>=0){_data[editCi].habits[editHi].days=tmpDays.slice().sort(function(a,b){return a-b;});saveState();render();}
   closeModal(0);
 }
-
 var addToCi=-1,newHabDays=[];
 function openAddHabit(ci){
   addToCi=ci;newHabDays=[0,1,2,3,4,5,6];
@@ -230,7 +226,6 @@ function confirmAddCat(){
 }
 function deleteHabit(ci,hi){if(confirm("Supprimer cette habitude ?")){_data[ci].habits.splice(hi,1);saveState();render();}}
 function deleteCat(ci){if(confirm("Supprimer cette categorie ?")){_data.splice(ci,1);saveState();render();}}
-
 var renameCi=-1,renameHi=-1,renameType="";
 function openRenameHabit(ci,hi){
   renameCi=ci;renameHi=hi;renameType="habit";
@@ -257,7 +252,6 @@ function confirmRename(){
   }
   saveState();render();closeModal(3);
 }
-
 var _yr,_mo,_wk,_data,_C,_view=0,_dark=false;
 function loadState(){
   var s=localStorage.getItem("ht4");
@@ -276,7 +270,6 @@ function defData(){
 }
 function toggleDark(){_dark=!_dark;document.body.classList.toggle("dark",_dark);saveState();document.getElementById("btn-dark").classList.toggle("active",_dark);}
 function setView(v){_view=v;["btn-main","btn-history","btn-summary"].forEach(function(id,i){document.getElementById(id).classList.toggle("active",i===v);});render();}
-
 function getWeeks(yr,mo){
   var wks=[],d=new Date(yr,mo,1),dow=d.getDay(),off=(dow===0)?-6:1-dow;
   var st=new Date(d);st.setDate(st.getDate()+off);
@@ -288,7 +281,6 @@ function getWeeks(yr,mo){
   return wks;
 }
 function ck(hab,yr,mo,wk,di){return hab+"||"+yr+"-"+mo+"-"+wk+"-"+di;}
-
 function calcStreak(habName,days){
   var today=new Date();today.setHours(0,0,0,0);
   var streak=0;
@@ -314,7 +306,6 @@ function calcStreak(habName,days){
   }
   return streak;
 }
-
 function calcWkStats(cw,mo){
   var total=0,done=0;
   for(var ci=0;ci<_data.length;ci++)for(var hi=0;hi<_data[ci].habits.length;hi++){
@@ -323,26 +314,23 @@ function calcWkStats(cw,mo){
   }
   return{total:total,done:done};
 }
-
 function drawDonut(cv,pct,col){
   var ctx=cv.getContext("2d"),cx=cv.width/2,cy=cv.height/2,r=cx-4;
   ctx.clearRect(0,0,cv.width,cv.height);
   ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle=_dark?"rgba(255,255,255,.1)":"rgba(0,0,0,.12)";ctx.lineWidth=7;ctx.stroke();
   if(pct>0){ctx.beginPath();ctx.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+Math.PI*2*pct);ctx.strokeStyle=col||"#4a5fa8";ctx.lineWidth=7;ctx.lineCap="round";ctx.stroke();}
 }
-
+function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
 function render(){
   var weeks=getWeeks(_yr,_mo);
   if(_wk>=weeks.length)_wk=0;
   var cw=weeks[_wk];
-
   var mnEl=document.getElementById("month-nav-el");
   mnEl.innerHTML="";mnEl.className="month-nav";
   var prev=document.createElement("button");prev.innerHTML="&lsaquo;";prev.onclick=function(){changeMonth(-1);};
-  var lbl=document.createElement("div");lbl.className="month-label";lbl.textContent=MN[_mo].toUpperCase()+" "+_yr;
+  var lbl=el("div","month-label");lbl.textContent=MN[_mo].toUpperCase()+" "+_yr;
   var next=document.createElement("button");next.innerHTML="&rsaquo;";next.onclick=function(){changeMonth(1);};
   mnEl.appendChild(prev);mnEl.appendChild(lbl);mnEl.appendChild(next);
-
   var wtEl=document.getElementById("week-tabs-el");
   wtEl.innerHTML="";
   if(_view===0){
@@ -356,79 +344,97 @@ function render(){
       wtEl.appendChild(tab);
     }
   }
-
   document.getElementById("btn-dark").classList.toggle("active",_dark);
   ["btn-main","btn-history","btn-summary"].forEach(function(id,i){document.getElementById(id).classList.toggle("active",i===_view);});
-
   var va=document.getElementById("view-area");va.innerHTML="";
   if(_view===0)renderMain(va,weeks,cw);
   else if(_view===1)renderHistory(va);
   else renderSummary(va,weeks);
 }
-
-function renderMain(va,weeks,cw){
-  var stats=calcWkStats(cw,_mo);
+function mkBanner(cw,stats){
   var pct=stats.total>0?stats.done/stats.total:0;
   var sd=cw[0].getDate()+"/"+(cw[0].getMonth()+1),ed=cw[6].getDate()+"/"+(cw[6].getMonth()+1);
-  var bn=document.createElement("div");bn.className="week-banner";
-  bn.innerHTML=`<div><div class="banner-title">SEMAINE ${(_wk+1)}</div><div class="banner-dates">${sd} - ${ed}</div></div>`
-    +"<div class="banner-donut"><canvas id="ban-cv" width="80" height="80"></canvas>"
-    +"<div class="banner-donut-label"><div class="banner-donut-pct">"+Math.round(pct*100)+"%</div><div class="banner-donut-txt">reussite</div></div></div>"
-    +"<div class="banner-stats"><div><span style="color:#2c3e7a;">&#9679;</span> <span class="acc">"+stats.done+" accomplies</span></div>"
-    +"<div><span style="color:#7a4a00;">&#9679;</span> <span class="rem">"+(stats.total-stats.done)+" restantes</span></div></div>";
-  va.appendChild(bn);
-  var cv=document.getElementById("ban-cv");
-  if(cv)drawDonut(cv,pct,"#4a5fa8");
-
-  var tw=document.createElement("div");tw.className="table-wrap";
-  var hdr=document.createElement("div");hdr.className="table-header";
-  hdr.innerHTML=`<div class="th-habits">DAILY HABITS</div><div class="th-streak">&#x1F525;</div>`
+  var bn=el("div","week-banner");
+  var titleDiv=el("div");
+  titleDiv.appendChild(el("div","banner-title","SEMAINE "+(_wk+1)));
+  var datesDiv=el("div","banner-dates",sd+" - "+ed);
+  titleDiv.appendChild(datesDiv);
+  bn.appendChild(titleDiv);
+  var donutDiv=el("div","banner-donut");
+  var cv=document.createElement("canvas");cv.id="ban-cv";cv.width=80;cv.height=80;
+  donutDiv.appendChild(cv);
+  var lbl=el("div","banner-donut-label");
+  lbl.appendChild(el("div","banner-donut-pct",Math.round(pct*100)+"%"));
+  lbl.appendChild(el("div","banner-donut-txt","reussite"));
+  donutDiv.appendChild(lbl);
+  bn.appendChild(donutDiv);
+  var statsDiv=el("div","banner-stats");
+  var accDiv=document.createElement("div");
+  var dot1=document.createElement("span");dot1.style.color="#2c3e7a";dot1.innerHTML="&#9679;";
+  var accSpan=el("span","acc"," "+stats.done+" accomplies");
+  accDiv.appendChild(dot1);accDiv.appendChild(accSpan);
+  var remDiv=document.createElement("div");
+  var dot2=document.createElement("span");dot2.style.color="#7a4a00";dot2.innerHTML="&#9679;";
+  var remSpan=el("span","rem"," "+(stats.total-stats.done)+" restantes");
+  remDiv.appendChild(dot2);remDiv.appendChild(remSpan);
+  statsDiv.appendChild(accDiv);statsDiv.appendChild(remDiv);
+  bn.appendChild(statsDiv);
+  return {bn:bn,cv:cv,pct:pct};
+}
+function renderMain(va,weeks,cw){
+  var stats=calcWkStats(cw,_mo);
+  var bannerResult=mkBanner(cw,stats);
+  va.appendChild(bannerResult.bn);
+  if(bannerResult.cv)drawDonut(bannerResult.cv,bannerResult.pct,"#4a5fa8");
+  var tw=el("div","table-wrap");
+  var hdr=el("div","table-header");
+  hdr.appendChild(el("div","th-habits","DAILY HABITS"));
+  var thStreak=el("div","th-streak");thStreak.innerHTML="&#x1F525;";hdr.appendChild(thStreak);
   for(var di=0;di<7;di++){
     var inM=cw[di].getMonth()===_mo;
-    hdr.innerHTML+="<div class="th-day"+(inM?"":" inactive")+""><div>"+DN[di]+"</div><div>"+cw[di].getDate()+"</div></div>";
+    var thd=el("div","th-day"+(inM?"":" inactive"));
+    thd.appendChild(el("div",null,DN[di]));
+    thd.appendChild(el("div",null,String(cw[di].getDate())));
+    hdr.appendChild(thd);
   }
-  hdr.innerHTML+="<div class="th-pct">% Sem.</div>";
+  hdr.appendChild(el("div","th-pct","% Sem."));
   tw.appendChild(hdr);
-
   for(var ci=0;ci<_data.length;ci++){
     var cat=_data[ci];
-    var cr=document.createElement("div");cr.className="cat-row";
-    var cl=document.createElement("div");cl.className="cat-label";
-    var cs=document.createElement("span");cs.textContent=cat.cat;
-    var ca=document.createElement("span");ca.className="cat-actions";
-    var renCatBtn=document.createElement("button");renCatBtn.className="cat-btn";renCatBtn.textContent="pencil";renCatBtn.title="Renommer";renCatBtn.innerHTML="&#9998;";
-    var delCatBtn=document.createElement("button");delCatBtn.className="cat-btn";delCatBtn.textContent="x";delCatBtn.title="Supprimer";
+    var cr=el("div","cat-row");
+    var cl=el("div","cat-label");
+    cl.appendChild(el("span",null,cat.cat));
+    var ca=el("span","cat-actions");
+    var renCatBtn=el("button","cat-btn");renCatBtn.innerHTML="&#9998;";renCatBtn.title="Renommer";
+    var delCatBtn=el("button","cat-btn","x");delCatBtn.title="Supprimer";
     (function(catIdx){renCatBtn.addEventListener("click",function(){openRenameCat(catIdx);});delCatBtn.addEventListener("click",function(){deleteCat(catIdx);});})(ci);
-    ca.appendChild(renCatBtn);ca.appendChild(delCatBtn);cl.appendChild(cs);cl.appendChild(ca);cr.appendChild(cl);tw.appendChild(cr);
-
+    ca.appendChild(renCatBtn);ca.appendChild(delCatBtn);cl.appendChild(ca);cr.appendChild(cl);tw.appendChild(cr);
     for(var hi=0;hi<cat.habits.length;hi++){
       var hab=cat.habits[hi],ad=hab.days||[0,1,2,3,4,5,6];
       var hbDone=0,hbTotal=0;
       for(var x=0;x<ad.length;x++){if(cw[ad[x]].getMonth()===_mo){hbTotal++;if(_C[ck(hab.name,_yr,_mo,_wk,ad[x])])hbDone++;}}
       var hbPct=hbTotal>0?Math.round(hbDone/hbTotal*100):0;
       var streak=calcStreak(hab.name,ad);
-
-      var hr=document.createElement("div");hr.className="habit-row";
-      var nc=document.createElement("div");nc.className="habit-name-cell";
-      var nt=document.createElement("span");nt.className="habit-name-txt";nt.textContent=hab.name;nt.title="Modifier les jours actifs";
-      var acts=document.createElement("span");acts.className="habit-actions";
-      var renBtn=document.createElement("button");renBtn.className="hab-btn";renBtn.innerHTML="&#9998;";
-      var delBtn=document.createElement("button");delBtn.className="hab-btn";delBtn.textContent="x";
+      var hr=el("div","habit-row");
+      var nc=el("div","habit-name-cell");
+      var nt=el("span","habit-name-txt",hab.name);nt.title="Modifier les jours actifs";
+      var acts=el("span","habit-actions");
+      var renBtn=el("button","hab-btn");renBtn.innerHTML="&#9998;";
+      var delBtn=el("button","hab-btn","x");
       (function(catIdx,habIdx){
         nt.addEventListener("click",function(){openDaysModal(catIdx,habIdx);});
         renBtn.addEventListener("click",function(e){e.stopPropagation();openRenameHabit(catIdx,habIdx);});
         delBtn.addEventListener("click",function(e){e.stopPropagation();deleteHabit(catIdx,habIdx);});
       })(ci,hi);
       acts.appendChild(renBtn);acts.appendChild(delBtn);nc.appendChild(nt);nc.appendChild(acts);hr.appendChild(nc);
-
-      var sc=document.createElement("div");sc.className="streak-cell";
-      var sb=document.createElement("span");sb.className="streak-badge"+(streak===0?" zero":"");
-      sb.innerHTML=streak>0?"&#x1F525;"+streak:"-";sc.appendChild(sb);hr.appendChild(sc);
-
+      var sc=el("div","streak-cell");
+      var sb=el("span","streak-badge"+(streak===0?" zero":""));
+      if(streak>0)sb.innerHTML="&#x1F525;"+streak;else sb.textContent="-";
+      sc.appendChild(sb);hr.appendChild(sc);
       for(var di2=0;di2<7;di2++){
-        var dc=document.createElement("div");dc.className="day-cell";
+        var dc=el("div","day-cell");
         var isA=ad.indexOf(di2)>=0&&cw[di2].getMonth()===_mo;
-        var cb=document.createElement("div");
+        var cb=el("div");
         var isDone=_C[ck(hab.name,_yr,_mo,_wk,di2)]?true:false;
         cb.className="cb"+(isA?(isDone?" checked":""):" inactive");
         if(isA&&isDone)cb.textContent="v";
@@ -439,44 +445,43 @@ function renderMain(va,weeks,cw){
         });})(ci,hi,di2);
         dc.appendChild(cb);hr.appendChild(dc);
       }
-
-      var pc2=document.createElement("div");pc2.className="pct-cell";
-      pc2.innerHTML=`<div class="pct-val"+(hbPct>=70?" good":"")+"">${hbPct}%</div><div class="pct-bar"><div class="pct-fill" style="width:${hbPct}%"></div></div>`
-      hr.appendChild(pc2);tw.appendChild(hr);
+      var pc2=el("div","pct-cell");
+      var pv2=el("div","pct-val"+(hbPct>=70?" good":""),hbPct+"%");
+      var pb2=el("div","pct-bar");
+      var pf2=el("div","pct-fill");pf2.style.width=hbPct+"%";
+      pb2.appendChild(pf2);pc2.appendChild(pv2);pc2.appendChild(pb2);hr.appendChild(pc2);tw.appendChild(hr);
     }
-
-    var ar=document.createElement("div");ar.className="add-row";
-    var ab=document.createElement("button");ab.className="add-habit-btn";ab.textContent="+ Ajouter une habitude";
+    var ar=el("div","add-row");
+    var ab=el("button","add-habit-btn","+ Ajouter une habitude");
     (function(catIdx){ab.addEventListener("click",function(){openAddHabit(catIdx);});})(ci);
     ar.appendChild(ab);tw.appendChild(ar);
   }
-
-  var acb=document.createElement("button");acb.className="add-cat-btn";acb.textContent="+ Ajouter une categorie";
+  var acb=el("button","add-cat-btn","+ Ajouter une categorie");
   acb.addEventListener("click",openAddCat);tw.appendChild(acb);
   va.appendChild(tw);
 }
-
 function renderHistory(va){
-  var hw=document.createElement("div");hw.className="history-wrap";
-  hw.innerHTML=`<div class="section-title">Vue historique - 6 mois</div>`
+  var hw=el("div","history-wrap");
+  hw.appendChild(el("div","section-title","Vue historique - 6 mois"));
   var today=new Date();
   var months=[];
   for(var m=5;m>=0;m--){var d=new Date(today.getFullYear(),today.getMonth()-m,1);months.push({yr:d.getFullYear(),mo:d.getMonth()});}
   var tbl=document.createElement("table");tbl.className="history-table";
-  var th="<tr><th class="hab-col">Habitude</th>";
-  for(var mi=0;mi<months.length;mi++)th+="<th>"+MN[months[mi].mo].substring(0,3)+" "+months[mi].yr+"</th>";
-  th+="</tr>";
-  tbl.innerHTML="<thead>"+th+"</thead>";
+  var thead=document.createElement("thead");
+  var htr=document.createElement("tr");
+  var th0=document.createElement("th");th0.className="hab-col";th0.textContent="Habitude";htr.appendChild(th0);
+  for(var mi=0;mi<months.length;mi++){var th=document.createElement("th");th.textContent=MN[months[mi].mo].substring(0,3)+" "+months[mi].yr;htr.appendChild(th);}
+  thead.appendChild(htr);tbl.appendChild(thead);
   var tbody=document.createElement("tbody");
   for(var ci=0;ci<_data.length;ci++){
     var cat=_data[ci];
     var ctr=document.createElement("tr");
-    ctr.innerHTML=`<td class="cat-header" colspan="${(months.length+1)}">${cat.cat}</td>`
-    tbody.appendChild(ctr);
+    var ctd=document.createElement("td");ctd.className="cat-header";ctd.colSpan=months.length+1;ctd.textContent=cat.cat;
+    ctr.appendChild(ctd);tbody.appendChild(ctr);
     for(var hi=0;hi<cat.habits.length;hi++){
       var hab=cat.habits[hi],ad=hab.days||[0,1,2,3,4,5,6];
       var tr=document.createElement("tr");
-      var ntd=document.createElement("td");ntd.className="hab-name";ntd.textContent=hab.name;tr.appendChild(ntd);
+      var ntd=el("td","hab-name",hab.name);tr.appendChild(ntd);
       for(var mi2=0;mi2<months.length;mi2++){
         var myr=months[mi2].yr,mmo=months[mi2].mo;
         var mWks=getWeeks(myr,mmo);
@@ -486,24 +491,26 @@ function renderHistory(va){
         }
         var td=document.createElement("td");
         var isFuture=myr>today.getFullYear()||(myr===today.getFullYear()&&mmo>today.getMonth());
-        if(isFuture||mTotal===0){td.innerHTML=`<span class="h-dot none"></span>`}
-        else{var p=mDone/mTotal;td.innerHTML=`<span class="h-dot "+(p>=0.7?"full":p>0?"partial":"none")+""></span> <small style="font-size:10px;">"+Math.round(p*100)+"%</small>`}
+        if(isFuture||mTotal===0){var dot=el("span","h-dot none");td.appendChild(dot);}
+        else{var p=mDone/mTotal;var dot2=el("span","h-dot "+(p>=0.7?"full":p>0?"partial":"none"));td.appendChild(dot2);var sm=el("small",null,Math.round(p*100)+"%");sm.style.fontSize="10px";td.appendChild(document.createTextNode(" "));td.appendChild(sm);}
         tr.appendChild(td);
       }
       tbody.appendChild(tr);
     }
   }
   tbl.appendChild(tbody);
-  var gw=document.createElement("div");gw.className="history-grid";gw.appendChild(tbl);hw.appendChild(gw);
-  var leg=document.createElement("div");leg.style="margin-top:12px;display:flex;gap:16px;font-size:11px;color:var(--text2);";
-  leg.innerHTML=`<span><span class="h-dot full" style="display:inline-block;"></span> >=70%</span><span><span class="h-dot partial" style="display:inline-block;"></span> 1-69%</span><span><span class="h-dot none" style="display:inline-block;"></span> 0%</span>`
+  var gw=el("div","history-grid");gw.appendChild(tbl);hw.appendChild(gw);
+  var leg=el("div");leg.style.cssText="margin-top:12px;display:flex;gap:16px;font-size:11px;color:var(--text2);";
+  var l1=document.createElement("span");l1.appendChild(el("span","h-dot full"));l1.appendChild(document.createTextNode(" >=70%"));
+  var l2=document.createElement("span");l2.appendChild(el("span","h-dot partial"));l2.appendChild(document.createTextNode(" 1-69%"));
+  var l3=document.createElement("span");l3.appendChild(el("span","h-dot none"));l3.appendChild(document.createTextNode(" 0%"));
+  leg.appendChild(l1);leg.appendChild(l2);leg.appendChild(l3);
   hw.appendChild(leg);va.appendChild(hw);
 }
-
 function renderSummary(va,weeks){
-  var sw=document.createElement("div");sw.className="summary-wrap";
-  sw.innerHTML=`<div class="section-title">Bilan - "+MN[_mo]+" ${_yr}</div>`
-  var dg=document.createElement("div");dg.className="donuts-grid";
+  var sw=el("div","summary-wrap");
+  sw.appendChild(el("div","section-title","Bilan - "+MN[_mo]+" "+_yr));
+  var dg=el("div","donuts-grid");
   for(var ci=0;ci<_data.length;ci++){
     for(var hi=0;hi<_data[ci].habits.length;hi++){
       var hab=_data[ci].habits[hi],ad=hab.days||[0,1,2,3,4,5,6];
@@ -512,8 +519,11 @@ function renderSummary(va,weeks){
         if(weeks[w][di].getMonth()===_mo&&ad.indexOf(di)>=0){total++;if(_C[ck(hab.name,_yr,_mo,w,di)])done++;}
       }
       var streak=calcStreak(hab.name,ad);
-      var dw=document.createElement("div");dw.className="donut-wrap";
-      dw.innerHTML=`<canvas id="dsn${ci}x${hi}" width="70" height="70"></canvas><div class="donut-label">${hab.name}</div>"+(streak>0?"<div class="donut-streak">&#x1F525; ${streak}j</div>":"");`
+      var dw=el("div","donut-wrap");
+      var cv=document.createElement("canvas");cv.id="dsn"+ci+"x"+hi;cv.width=70;cv.height=70;
+      dw.appendChild(cv);
+      dw.appendChild(el("div","donut-label",hab.name));
+      if(streak>0){var ds=el("div","donut-streak");ds.innerHTML="&#x1F525; "+streak+"j";dw.appendChild(ds);}
       dg.appendChild(dw);
     }
   }
@@ -525,14 +535,12 @@ function renderSummary(va,weeks){
     for(var w2=0;w2<weeks2.length;w2++)for(var di2=0;di2<7;di2++){
       if(weeks2[w2][di2].getMonth()===_mo&&ad2.indexOf(di2)>=0){total2++;if(_C[ck(hab2.name,_yr,_mo,w2,di2)])done2++;}
     }
-    var cv=document.getElementById("dsn"+ci2+"x"+hi2);
-    if(cv)drawDonut(cv,total2>0?done2/total2:0);
+    var cv2=document.getElementById("dsn"+ci2+"x"+hi2);
+    if(cv2)drawDonut(cv2,total2>0?done2/total2:0);
   }
 }
-
 function changeMonth(d){_mo+=d;if(_mo>11){_mo=0;_yr++;}if(_mo<0){_mo=11;_yr--;}_wk=0;saveState();render();}
 function selWeek(w){_wk=w;saveState();render();}
-
 loadState();
 if(sessionStorage.getItem(SK)==="1")render();
 </script>
