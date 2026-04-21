@@ -371,7 +371,7 @@ function renderMain(va,weeks,cw){
   var pct=stats.total>0?stats.done/stats.total:0;
   var sd=cw[0].getDate()+"/"+(cw[0].getMonth()+1),ed=cw[6].getDate()+"/"+(cw[6].getMonth()+1);
   var bn=document.createElement("div");bn.className="week-banner";
-  bn.innerHTML="<div><div class="banner-title">SEMAINE "+(_wk+1)+"</div><div class="banner-dates">"+sd+" - "+ed+"</div></div>"
+  bn.innerHTML=`<div><div class="banner-title">SEMAINE ${(_wk+1)}</div><div class="banner-dates">${sd} - ${ed}</div></div>`
     +"<div class="banner-donut"><canvas id="ban-cv" width="80" height="80"></canvas>"
     +"<div class="banner-donut-label"><div class="banner-donut-pct">"+Math.round(pct*100)+"%</div><div class="banner-donut-txt">reussite</div></div></div>"
     +"<div class="banner-stats"><div><span style="color:#2c3e7a;">&#9679;</span> <span class="acc">"+stats.done+" accomplies</span></div>"
@@ -382,7 +382,7 @@ function renderMain(va,weeks,cw){
 
   var tw=document.createElement("div");tw.className="table-wrap";
   var hdr=document.createElement("div");hdr.className="table-header";
-  hdr.innerHTML="<div class="th-habits">DAILY HABITS</div><div class="th-streak">&#x1F525;</div>";
+  hdr.innerHTML=`<div class="th-habits">DAILY HABITS</div><div class="th-streak">&#x1F525;</div>`
   for(var di=0;di<7;di++){
     var inM=cw[di].getMonth()===_mo;
     hdr.innerHTML+="<div class="th-day"+(inM?"":" inactive")+""><div>"+DN[di]+"</div><div>"+cw[di].getDate()+"</div></div>";
@@ -441,7 +441,7 @@ function renderMain(va,weeks,cw){
       }
 
       var pc2=document.createElement("div");pc2.className="pct-cell";
-      pc2.innerHTML="<div class="pct-val"+(hbPct>=70?" good":"")+"">"+hbPct+"%</div><div class="pct-bar"><div class="pct-fill" style="width:"+hbPct+"%"></div></div>";
+      pc2.innerHTML=`<div class="pct-val"+(hbPct>=70?" good":"")+"">${hbPct}%</div><div class="pct-bar"><div class="pct-fill" style="width:${hbPct}%"></div></div>`
       hr.appendChild(pc2);tw.appendChild(hr);
     }
 
@@ -458,7 +458,7 @@ function renderMain(va,weeks,cw){
 
 function renderHistory(va){
   var hw=document.createElement("div");hw.className="history-wrap";
-  hw.innerHTML="<div class="section-title">Vue historique - 6 mois</div>";
+  hw.innerHTML=`<div class="section-title">Vue historique - 6 mois</div>`
   var today=new Date();
   var months=[];
   for(var m=5;m>=0;m--){var d=new Date(today.getFullYear(),today.getMonth()-m,1);months.push({yr:d.getFullYear(),mo:d.getMonth()});}
@@ -471,7 +471,7 @@ function renderHistory(va){
   for(var ci=0;ci<_data.length;ci++){
     var cat=_data[ci];
     var ctr=document.createElement("tr");
-    ctr.innerHTML="<td class="cat-header" colspan=""+(months.length+1)+"">"+cat.cat+"</td>";
+    ctr.innerHTML=`<td class="cat-header" colspan="${(months.length+1)}">${cat.cat}</td>`
     tbody.appendChild(ctr);
     for(var hi=0;hi<cat.habits.length;hi++){
       var hab=cat.habits[hi],ad=hab.days||[0,1,2,3,4,5,6];
@@ -486,8 +486,8 @@ function renderHistory(va){
         }
         var td=document.createElement("td");
         var isFuture=myr>today.getFullYear()||(myr===today.getFullYear()&&mmo>today.getMonth());
-        if(isFuture||mTotal===0){td.innerHTML="<span class="h-dot none"></span>";}
-        else{var p=mDone/mTotal;td.innerHTML="<span class="h-dot "+(p>=0.7?"full":p>0?"partial":"none")+""></span> <small style="font-size:10px;">"+Math.round(p*100)+"%</small>";}
+        if(isFuture||mTotal===0){td.innerHTML=`<span class="h-dot none"></span>`}
+        else{var p=mDone/mTotal;td.innerHTML=`<span class="h-dot "+(p>=0.7?"full":p>0?"partial":"none")+""></span> <small style="font-size:10px;">"+Math.round(p*100)+"%</small>`}
         tr.appendChild(td);
       }
       tbody.appendChild(tr);
@@ -496,13 +496,13 @@ function renderHistory(va){
   tbl.appendChild(tbody);
   var gw=document.createElement("div");gw.className="history-grid";gw.appendChild(tbl);hw.appendChild(gw);
   var leg=document.createElement("div");leg.style="margin-top:12px;display:flex;gap:16px;font-size:11px;color:var(--text2);";
-  leg.innerHTML="<span><span class="h-dot full" style="display:inline-block;"></span> >=70%</span><span><span class="h-dot partial" style="display:inline-block;"></span> 1-69%</span><span><span class="h-dot none" style="display:inline-block;"></span> 0%</span>";
+  leg.innerHTML=`<span><span class="h-dot full" style="display:inline-block;"></span> >=70%</span><span><span class="h-dot partial" style="display:inline-block;"></span> 1-69%</span><span><span class="h-dot none" style="display:inline-block;"></span> 0%</span>`
   hw.appendChild(leg);va.appendChild(hw);
 }
 
 function renderSummary(va,weeks){
   var sw=document.createElement("div");sw.className="summary-wrap";
-  sw.innerHTML="<div class="section-title">Bilan - "+MN[_mo]+" "+_yr+"</div>";
+  sw.innerHTML=`<div class="section-title">Bilan - "+MN[_mo]+" ${_yr}</div>`
   var dg=document.createElement("div");dg.className="donuts-grid";
   for(var ci=0;ci<_data.length;ci++){
     for(var hi=0;hi<_data[ci].habits.length;hi++){
@@ -513,7 +513,7 @@ function renderSummary(va,weeks){
       }
       var streak=calcStreak(hab.name,ad);
       var dw=document.createElement("div");dw.className="donut-wrap";
-      dw.innerHTML="<canvas id="dsn"+ci+"x"+hi+"" width="70" height="70"></canvas><div class="donut-label">"+hab.name+"</div>"+(streak>0?"<div class="donut-streak">&#x1F525; "+streak+"j</div>":"");
+      dw.innerHTML=`<canvas id="dsn${ci}x${hi}" width="70" height="70"></canvas><div class="donut-label">${hab.name}</div>"+(streak>0?"<div class="donut-streak">&#x1F525; ${streak}j</div>":"");`
       dg.appendChild(dw);
     }
   }
