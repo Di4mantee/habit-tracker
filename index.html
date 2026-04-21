@@ -281,8 +281,8 @@ function confirmAddCat(){
   saveState();render();closeModal('add-cat-modal');
 }
 
-function deleteHabit(ci,hi){if(confirm('Supprimer cette habitude ?')){_data[ci].habits.splice(hi,1);saveState();render();}}
-function deleteCat(ci){if(confirm('Supprimer cette categorie ?')){_data.splice(ci,1);saveState();render();}}
+function deleteHabit(ci,hi){if(confirm('Supprimer cette habitude')){_data[ci].habits.splice(hi,1);saveState();render();}}
+function deleteCat(ci){if(confirm('Supprimer cette categorie')){_data.splice(ci,1);saveState();render();}}
 
 var renameCi=-1,renameHi=-1,renameType='';
 function openRenameHabit(ci,hi){
